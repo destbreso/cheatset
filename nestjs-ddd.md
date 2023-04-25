@@ -1,24 +1,24 @@
 # A DDD approach in Nestjs
 
-## Implement a DDD architecture in nestjs with domain entities, aggregates and value objects
+## Basic DDD architecture in Nestjs with domain entities, aggregates and value objects
 
 NestJS is a framework that provides a great deal of flexibility when it comes to implementing different architectural patterns, including Domain-Driven Design (DDD).
 
 Here are some steps you can follow to implement a DDD architecture in NestJS with domain entities, aggregates, and value objects.This approach can help you create a more maintainable and extensible application by separating business logic from infrastructure concerns.
 
-1. Define your domain entities: Start by defining the domain entities that represent the core concepts of your application. These entities should encapsulate both behavior and data, and should be responsible for enforcing business rules. You can define your domain entities as classes in TypeScript.
+1. **Define your domain entities**: Start by defining the domain entities that represent the core concepts of your application. These entities should encapsulate both behavior and data, and should be responsible for enforcing business rules. You can define your domain entities as classes in TypeScript.
 
-2. Define your value objects: Value objects are immutable objects that represent a specific value, such as a date, currency, or address. They are used to encapsulate and validate data, and can be used as properties of your domain entities. Define your value objects as classes in TypeScript.
+2. **Define your value objects**: Value objects are immutable objects that represent a specific value, such as a date, currency, or address. They are used to encapsulate and validate data, and can be used as properties of your domain entities. Define your value objects as classes in TypeScript.
 
-3. Define your aggregates: Aggregates are collections of domain entities that are treated as a single unit of consistency. They are responsible for enforcing **consistency rules** and protecting the integrity of the domain. Define your aggregates as classes in TypeScript.
+3. **Define your aggregates**: Aggregates are collections of domain entities that are treated as a single unit of consistency. They are responsible for enforcing *consistency rules* and protecting the integrity of the domain. Define your aggregates as classes in TypeScript.
 
-4. Implement your domain services: Domain services are responsible for implementing **business logic** that does not naturally fit into a domain entity or aggregate. They can be used to coordinate the behavior of multiple entities or aggregates. Implement your domain services as classes in TypeScript.
+4. **Implement your domain services**: Domain services are responsible for implementing *business logic* that does not naturally fit into a domain entity or aggregate. They can be used to coordinate the behavior of multiple entities or aggregates. Implement your domain services as classes in TypeScript.
 
-5. Define your **application services**: Application services are responsible for orchestrating the flow of data and behavior between your user interface, domain, and infrastructure layers. They should use the domain entities, aggregates, and services to implement business use cases. Implement your application services as classes in TypeScript.
+5. **Define your application services**: Application services are responsible for orchestrating the flow of data and behavior between your user interface, domain, and infrastructure layers. They should use the domain entities, aggregates, and services to implement business use cases. Implement your application services as classes in TypeScript.
 
-6. Define your controllers and routes: Controllers are responsible for handling incoming HTTP requests and returning HTTP responses. They should use the application services to implement the appropriate use case for each route. Define your controllers and routes using the NestJS decorators and routing system.
+6. **Define your controllers and routes**: Controllers are responsible for handling incoming HTTP requests and returning HTTP responses. They should use the application services to implement the appropriate use case for each route. Define your controllers and routes using the NestJS decorators and routing system.
 
-7. Implement your data access layer: The data access layer is responsible for persisting and retrieving data from a database or other storage mechanism. You can use an ORM or query builder library, such as TypeORM or Prisma, to implement your data access layer.
+7. **Implement your data access layer**: The data access layer is responsible for persisting and retrieving data from a database or other storage mechanism. You can use an ORM or query builder library, such as TypeORM or Prisma, to implement your data access layer.
 
 This approach can help you create a more maintainable and extensible application by separating business logic from infrastructure concerns.
 
@@ -40,7 +40,7 @@ For example, imagine a domain entity representing a bank account. One of the con
 
 By enforcing consistency rules in this way, domain entities and aggregates ensure that the data in the system remains valid and consistent, even as it undergoes changes. This helps to protect the integrity of the domain and ensure that the system operates as intended.
 
-## Business rules
+## Business logic
 
 Business logic is a key concept in software development, particularly in the context of domain-driven design (DDD). It refers to the rules and processes that define how a particular business or industry operates, and how data within that industry should be processed and transformed.
 
@@ -53,13 +53,13 @@ Examples of business logic might include:
 * Rules for validating data, including things like data formats, ranges of values, and relationships between entities.
 * Rules for managing customers, including things like customer registration, account management, and loyalty programs.
 
-In the context of domain-driven design, business logic is typically implemented within domain entities and aggregates. These entities and aggregates encapsulate both data and behavior, and are responsible for enforcing the rules and processes that define the business or industry.
+In the context of DDD, business logic is typically implemented within domain entities and aggregates. These entities and aggregates encapsulate both data and behavior, and are responsible for enforcing the rules and processes that define the business or industry.
 
 By implementing business logic within domain entities and aggregates, software developers can create systems that are more closely aligned with the needs and requirements of the business or industry. This can help to ensure that the system operates in a way that is consistent with the business or industry, and that it is more adaptable to changing needs and requirements over time.
 
 ## Application services (Use Cases)
 
-Application services are a key concept in software architecture, particularly in the context of domain-driven design (DDD). They are responsible for coordinating the flow of data and behavior between the user interface, domain, and infrastructure layers of a software system.
+Application services are a key concept in software architecture, particularly in the context of DDD. They are responsible for coordinating the flow of data and behavior between the user interface, domain, and infrastructure layers of a software system.
 
 At a high level, application services are responsible for implementing the use cases of a software system. They receive requests from the user interface layer, use the domain layer to perform the necessary business logic, and return a response to the user interface layer.
 
@@ -69,13 +69,13 @@ Some common responsibilities of application services include:
 * Enforcing transactional consistency across multiple domain entities and aggregates.
 * Adapting data and behavior from the domain layer to the needs of the user interface layer.
 * Managing authentication and authorization for users of the system.
-    Coordinating communication with external systems or services.
+* Coordinating communication with external systems or services.
 
 In the context of DDD, application services are typically implemented as stateless classes or functions that operate on domain entities and aggregates. They are responsible for orchestrating the flow of data and behavior between these entities and aggregates to implement a specific use case.
 
 Application services are an important part of a software system, as they help to separate the concerns of the user interface, domain, and infrastructure layers. By encapsulating the behavior of the domain layer within application services, developers can create a more modular and maintainable system that is easier to test and extend over time.
 
-## Example of how application services coordinate domain entities to implement a business use case
+## Example: how application services coordinate domain entities to implement a business use case
 
 Let's say you are developing a banking application that allows users to transfer money between accounts. The process of transferring money involves several domain entities, including the sender account, the receiver account, and the transaction record.
 
@@ -202,8 +202,6 @@ By encapsulating the behavior of the `Order` and `OrderLineItem` entities within
 
 To implement a base entity class hierarchy based on DDD principles in `NestJS` using `TypeORM`, you can follow these steps:
 
-### Core structure (base entities, building blocks)
-
 1. **Define a base Entity class**: Start by defining a base Entity class that represents the common properties and behavior of all entities in your system. This class should define an id property, as well as any other common properties that all entities in your system share.
 
 ```js
@@ -249,6 +247,23 @@ export class User extends AggregateRoot {
 }
 ```
 
+* **Create sub-classes based on inheritance**: Create sub-classes of your domain entities that inherit from the base classes. These sub-classes can add their own specific behavior and properties, while still inheriting the common properties and behavior from the base classes.
+
+```js
+export class Customer extends User {
+  billingAddress: Address;
+  shippingAddress: Address;
+  // Define behavior and enforce business rules specific to customers here
+}
+```
+
+```js
+export class Administrator extends User {
+  permissions: string[];
+  // Define behavior and enforce business rules specific to administrators here
+}
+```
+
 4. **Define a Repository class for each entity**: Define a Repository class for each entity that extends the Repository class provided by TypeORM. This class should be responsible for persisting and retrieving instances of the entity from the database.
 
 ```js
@@ -284,9 +299,9 @@ export class UserService {
 }
 ```
 
-This approach allows you to create a modular and maintainable system that is easier to extend and test over time.
+This approach allows you to create a  modular and maintainable system that is easier to extend and test over time. The base classes provide a common foundation for all entities, while the sub-classes add their own specific behavior and properties, allowing you to model complex domain concepts in a flexible and scalable way.
 
-### Use the base entities to build a hierarchy?
+<!-- ### Use the base entities to build a hierarchy?
 
 In DDD, a common technique for organizing domain entities is to create a hierarchy of base entity classes. This hierarchy is typically based on the concept of inheritance, where each entity class inherits from a more general base class, and adds its own specific behavior and properties.
 
@@ -338,26 +353,8 @@ export class Address extends ValueObject {
   zipCode: string;
   // Define behavior and enforce business rules here
 }
-```
+``` -->
 
-* **Create sub-classes based on inheritance**: Create sub-classes of your domain entities that inherit from the base classes. These sub-classes can add their own specific behavior and properties, while still inheriting the common properties and behavior from the base classes.
-
-```js
-export class Customer extends User {
-  billingAddress: Address;
-  shippingAddress: Address;
-  // Define behavior and enforce business rules specific to customers here
-}
-```
-
-```js
-export class Administrator extends User {
-  permissions: string[];
-  // Define behavior and enforce business rules specific to administrators here
-}
-```
-
-By using base entities to build a hierarchy, you can create a more modular and maintainable system that is easier to extend and test over time. The base classes provide a common foundation for all entities, while the sub-classes add their own specific behavior and properties, allowing you to model complex domain concepts in a flexible and scalable way.
 
 
 ## Simple microservice (nestjs,typeorm,DDD)
@@ -816,3 +813,6 @@ Here's how it works:
 7. Based on the topic of the message, the appropriate action is taken. In this case, the consumer creates a new User or Product entity in the database by calling the relevant service method (createUser() or createProduct()).
 
 That's a brief overview of how the Kafka consumer works in this example. Note that this is just one way to handle incoming messages in a Kafka consumer, and the exact implementation may vary based on your specific use case.
+
+
+## WORK IN PROGRESS
