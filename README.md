@@ -1,0 +1,3 @@
+# README
+
+This repository contains detailed documentation of the tricks and techniques I have learned and used as a developer. It includes solutions to common problems, hacks, and shortcuts that have allowed me to improve my productivity and efficiency in software development. The documentation is organized by topics and programming languages, and is constantly updated as I continue to learn and discover new tricks.
