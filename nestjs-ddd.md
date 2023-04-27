@@ -40,7 +40,7 @@ For example, imagine a domain entity representing a bank account. One of the con
 
 By enforcing consistency rules in this way, domain entities and aggregates ensure that the data in the system remains valid and consistent, even as it undergoes changes. This helps to protect the integrity of the domain and ensure that the system operates as intended.
 
-## Business logic
+### Business logic
 
 Business logic is a key concept in software development, particularly in the context of domain-driven design (DDD). It refers to the rules and processes that define how a particular business or industry operates, and how data within that industry should be processed and transformed.
 
@@ -57,7 +57,7 @@ In the context of DDD, business logic is typically implemented within domain ent
 
 By implementing business logic within domain entities and aggregates, software developers can create systems that are more closely aligned with the needs and requirements of the business or industry. This can help to ensure that the system operates in a way that is consistent with the business or industry, and that it is more adaptable to changing needs and requirements over time.
 
-## Application services (Use Cases)
+### Application services (Use Cases)
 
 Application services are a key concept in software architecture, particularly in the context of DDD. They are responsible for coordinating the flow of data and behavior between the user interface, domain, and infrastructure layers of a software system.
 
@@ -75,7 +75,7 @@ In the context of DDD, application services are typically implemented as statele
 
 Application services are an important part of a software system, as they help to separate the concerns of the user interface, domain, and infrastructure layers. By encapsulating the behavior of the domain layer within application services, developers can create a more modular and maintainable system that is easier to test and extend over time.
 
-## Example: how application services coordinate domain entities to implement a business use case
+#### Example: how application services coordinate domain entities to implement a business use case
 
 Let's say you are developing a banking application that allows users to transfer money between accounts. The process of transferring money involves several domain entities, including the sender account, the receiver account, and the transaction record.
 
@@ -123,7 +123,7 @@ If the check passes, the service creates a new `Transaction` entity and updates 
 
 By encapsulating the behavior of the `Account` and `Transaction` entities within the `TransferService`, we can create a more modular and maintainable system that is easier to test and extend. The `TransferService` coordinates the behavior of these entities to implement the specific use case of transferring money between accounts, while the entities themselves are responsible for enforcing the business rules and ensuring data consistency.
 
-## Aggregates
+### Aggregates
 
 In domain-driven design, aggregates are collections of related domain entities that are treated as a single unit of consistency. Aggregates are responsible for enforcing consistency rules and protecting the integrity of the domain. Here are the steps you can follow to implement aggregates in your system:
 
@@ -141,7 +141,7 @@ In domain-driven design, aggregates are collections of related domain entities t
 
 Aggregates allow you to enforce consistency rules and protect the integrity of the domain, while still allowing for a flexible and modular architecture.
 
-### Example
+#### Example
 
 Let's say you are developing an e-commerce application that allows customers to place orders. The process of placing an order involves several domain entities, including the customer, the order, and the order line items. These entities can be grouped into an aggregate called `OrderAggregate`.
 
@@ -215,8 +215,7 @@ While there is no single recommended common interface for an aggregate root, the
 
 By defining an interface for an aggregate root that includes these characteristics, you can ensure that the aggregate root provides a consistent and reliable entry point for all operations within the aggregate. This can help to promote maintainability, scalability, and reliability of your application.
 
-#### example
-
+#### Example
 
 ```js
 import { EntityId } from 'typeorm';
@@ -248,8 +247,7 @@ Note that the AggregateRoot interface is a generic interface, where the type par
 
 This is just one example of an interface for an aggregate root, and the exact characteristics may vary depending on the specific needs of your application. However, by defining an interface for an aggregate root that includes these characteristics, you can ensure that the aggregate root provides a consistent and reliable entry point for all operations within the aggregate.
 
-
-## Domain events
+### Domain events
 
 In Domain-Driven Design (DDD), events are an important concept that can be used to represent changes to the state of the domain model. Events are lightweight objects that capture the important details of a change, such as the type of change and the data that was affected.
 
@@ -263,7 +261,7 @@ Other parts of the system, such as the inventory management system, the shipping
 
 By using events and event publishing, DDD applications can be designed to be more flexible and scalable. Events allow different parts of the system to communicate and collaborate without being tightly coupled, and event publishing allows changes to the state of the domain model to be propagated to other parts of the system in a decoupled and asynchronous way.
 
-### Advanteges
+#### Advanteges
 
 Event publishing has several benefits beyond improving scalability and fault tolerance in a distributed system. Here are some additional benefits of event publishing:
 
@@ -279,7 +277,7 @@ Event publishing has several benefits beyond improving scalability and fault tol
 
 Overall, event publishing has many benefits beyond improving scalability and fault tolerance. By promoting loose coupling, enabling event sourcing, providing audit logging, enabling real-time and asynchronous processing, event publishing can help to improve the flexibility, reliability, and performance of a system.
 
-### how event publishing can help with scalability
+#### How event publishing can help with scalability
 
 Consider an e-commerce application that includes a shopping cart service, an inventory management service, and a billing service. When a customer adds an item to their shopping cart, the shopping cart service updates the state of the shopping cart and publishes an event, such as ItemAddedToCartEvent.
 
@@ -293,7 +291,7 @@ In addition, event publishing allows for greater flexibility and extensibility i
 
 Overall, event publishing can help with scalability by allowing different parts of the system to communicate and collaborate asynchronously and independently, without being tightly coupled. This can help to improve performance, reduce bottlenecks, and promote a more flexible and extensible architecture.
 
-### event publishing can also help with fault tolerance in a distributed system.
+#### How event publishing can help with fault tolerance in a distributed system
 
 In a distributed system, failures can occur at various levels, such as network failures, hardware failures, or software failures. These failures can cause disruptions in the system and affect the availability and reliability of the system.
 
@@ -306,9 +304,7 @@ For example, consider an e-commerce application where a customer places an order
 Now, imagine that there is a failure in the inventory management service, such as a network failure or a hardware failure. With event publishing, the OrderPlacedEvent is still persisted in the message broker and can be delivered to the inventory management service when it becomes available again. In the meantime, the billing service can still consume the event and perform its own operations, without being affected by the failure in the inventory management service.
 
 Overall, event publishing can help with fault tolerance by providing a reliable and flexible way to propagate changes to the state of the domain model across different parts of the system. This can help to improve the availability and reliability of the system, and reduce the impact of failures on the system as a whole.
-
-#### example
-
+#### Example
 
 ```js
 import { EntityId } from 'typeorm';
@@ -361,7 +357,135 @@ For example, when an order item is added, the addOrderItem method adds the item 
 Note that in this example, the publishEvents method is a no-op, as events are published immediately when changes are made. However, in a more complex system, events may be stored in a queue or event store and published asynchronously at a later time.
 
 Overall, this example demonstrates how an aggregate root can be used with event publishing to propagate changes to the state of the domain model across different parts of the system. By publishing events, the system can be designed to be more flexible, scalable, and fault-tolerant.
-## Implement a base entities for build a hierarchy based on DDD priciples oriented for nestjs and typeorm
+
+### Domain entities/persistence Entities separation
+
+Separating domain entities and persistence entities is a good approach in Domain-Driven Design (DDD) architectures implemented in NestJS with TypeORM. This separation helps to maintain a clear separation of concerns between the domain layer and the persistence layer.
+
+In this approach, the domain entities represent the business concepts and rules of the application, while the persistence entities represent the data structures that are stored in the database. The domain entities are usually mapped to the persistence entities using a mapper or conversion layer.
+
+Separating domain entities and persistence entities helps to ensure that changes to the database schema do not affect the domain logic of the application, and vice versa. It also makes it easier to test and maintain the application, as changes to the domain logic can be made without affecting the database schema or the persistence layer.
+
+NestJS and TypeORM provide several features and tools to support this approach, such as decorators for defining entities, repositories for querying and manipulating data, and data mappers for converting between domain and persistence entities.
+
+Overall, separating domain entities and persistence entities is a good practice in DDD architectures implemented in NestJS with TypeORM, as it promotes a clear separation of concerns and helps to maintain a maintainable and scalable codebase.
+
+#### Example
+
+Here's an example of how the separation between domain entities and persistence entities can be implemented with a mapping layer in NestJS and TypeORM.
+
+First, let's define a domain entity representing a User:
+
+```js
+// user.entity.ts
+
+export class User {
+  constructor(
+    public readonly id: number,
+    public readonly username: string,
+    public readonly email: string,
+    public readonly password: string
+  ) {}
+}
+```
+
+This entity represents the business concept of a User in our application.
+
+Next, let's define a persistence entity representing the User table in the database:
+
+```js
+// user.entity.ts
+
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+
+@Entity()
+export class UserEntity {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column()
+  username: string;
+
+  @Column()
+  email: string;
+
+  @Column()
+  password: string;
+}
+```
+
+This entity represents the data structure that is stored in the database.
+
+To map between these two entities, we can define a mapper or conversion layer. Here's an example of how this can be implemented:
+
+```js
+// user.mapper.ts
+
+import { Injectable } from '@nestjs/common';
+import { User } from './user.entity';
+import { UserEntity } from './user.entity';
+
+@Injectable()
+export class UserMapper {
+  toDomainEntity(entity: UserEntity): User {
+    return new User(
+      entity.id,
+      entity.username,
+      entity.email,
+      entity.password
+    );
+  }
+
+  toPersistenceEntity(domainEntity: User): UserEntity {
+    const entity = new UserEntity();
+    entity.id = domainEntity.id;
+    entity.username = domainEntity.username;
+    entity.email = domainEntity.email;
+    entity.password = domainEntity.password;
+    return entity;
+  }
+}
+```
+
+In this example, the UserMapper class defines two methods: toDomainEntity and toPersistenceEntity. The toDomainEntity method converts a UserEntity object to a User object, while the toPersistenceEntity method converts a User object to a UserEntity object.
+
+Finally, we can use these entities and mapper in our NestJS application:
+
+```js
+// user.service.ts
+
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { User } from './user.entity';
+import { UserEntity } from './user.entity';
+import { UserMapper } from './user.mapper';
+
+@Injectable()
+export class UserService {
+  constructor(
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>,
+    private readonly userMapper: UserMapper
+  ) {}
+
+  async findById(id: number): Promise<User> {
+    const entity = await this.userRepository.findOne(id);
+    return this.userMapper.toDomainEntity(entity);
+  }
+
+  async create(user: User): Promise<User> {
+    const entity = this.userMapper.toPersistenceEntity(user);
+    const createdEntity = await this.userRepository.save(entity);
+    return this.userMapper.toDomainEntity(createdEntity);
+  }
+}
+```
+
+In this example, the UserService class uses the UserEntity and User entities, as well as the UserMapper class, to query and manipulate data in the database. The findById method retrieves a UserEntity object from the database and converts it to a User object using the toDomainEntity method of the UserMapper class. The create method converts a User object to a UserEntity object using the toPersistenceEntity method of the UserMapper class, saves the entity to the database using the userRepository repository, and converts the created entity back to a User object using the toDomainEntity method of the UserMapper class.
+
+This example demonstrates how the separation between domain entities and persistence entities, along with a mapping layer, can be implemented in NestJS and TypeORM to maintain a clear separation of concerns and promote maintainability and scalability of the application.
+### Implement a base entities for build a hierarchy based on DDD priciples oriented for nestjs and typeorm
 
 To implement a base entity class hierarchy based on DDD principles in `NestJS` using `TypeORM`, you can follow these steps:
 
@@ -518,9 +642,7 @@ export class Address extends ValueObject {
 }
 ``` -->
 
-
-
-## Simple microservice (nestjs,typeorm,DDD)
+## Microservices (nestjs,typeorm,DDD)
 
 Implementing a microservice with NestJS, TypeORM, and DDD involves several steps. Here's a high-level overview of the steps involved:
 
@@ -538,7 +660,7 @@ Implementing a microservice with NestJS, TypeORM, and DDD involves several steps
 
 * **Define the microservice**: Define the microservice using the NestJS framework. This microservice should use the controllers, domain services, and repositories to handle the incoming requests and responses, and to interact with the database.
 
-### Example: implement a microservice with NestJS, TypeORM, and DDD
+### Example: simple microservice with NestJS, TypeORM, and DDD
 
 * Define the domain entities:
 
@@ -739,7 +861,6 @@ bootstrap();
 
 This is just a basic example of how to implement a microservice with NestJS, TypeORM, and DDD. Depending on the complexity of your domain, you may need to add additional services, controllers, DTOs, and repositories to handle more complex business logic.
 
-
 ### Implement a event oriented Microservice using message broker approach (`kafka`)
 
 To implement the microservice using a message broker like Kafka, you can use the NestJS Kafka package, which provides a simple and easy-to-use interface for interacting with Kafka.
@@ -766,7 +887,7 @@ Here are the high-level steps involved in implementing the microservice using Ka
 export const USER_TOPIC = 'user';
 export const PRODUCT_TOPIC = 'product';
 ```
-    
+
 * Define the message types:
 
 ```js
@@ -955,7 +1076,7 @@ bootstrap();
 
 This code defines a microservice with two controllers (one for users and one for products), and uses Kafka to communicate between microservices. When a request is made to create a new user or product, a message is sent to the appropriate Kafka topic. The Kafka consumer then receives the message and creates a new user or product in the database.
 
-#### How the Kafka consumer handles incoming messages?
+### How the Kafka consumer handles incoming messages?
 
 In the code above, the Kafka consumer is defined in the `KafkaConsumer` class. It is responsible for subscribing to the appropriate Kafka topics and handling the incoming messages.
 
@@ -976,137 +1097,6 @@ Here's how it works:
 7. Based on the topic of the message, the appropriate action is taken. In this case, the consumer creates a new User or Product entity in the database by calling the relevant service method (createUser() or createProduct()).
 
 That's a brief overview of how the Kafka consumer works in this example. Note that this is just one way to handle incoming messages in a Kafka consumer, and the exact implementation may vary based on your specific use case.
-
-
-## Domain entities/persistence Entities separation
-
-Separating domain entities and persistence entities is a good approach in Domain-Driven Design (DDD) architectures implemented in NestJS with TypeORM. This separation helps to maintain a clear separation of concerns between the domain layer and the persistence layer.
-
-In this approach, the domain entities represent the business concepts and rules of the application, while the persistence entities represent the data structures that are stored in the database. The domain entities are usually mapped to the persistence entities using a mapper or conversion layer.
-
-Separating domain entities and persistence entities helps to ensure that changes to the database schema do not affect the domain logic of the application, and vice versa. It also makes it easier to test and maintain the application, as changes to the domain logic can be made without affecting the database schema or the persistence layer.
-
-NestJS and TypeORM provide several features and tools to support this approach, such as decorators for defining entities, repositories for querying and manipulating data, and data mappers for converting between domain and persistence entities.
-
-Overall, separating domain entities and persistence entities is a good practice in DDD architectures implemented in NestJS with TypeORM, as it promotes a clear separation of concerns and helps to maintain a maintainable and scalable codebase.
-
-
-### Example
-
-Here's an example of how the separation between domain entities and persistence entities can be implemented with a mapping layer in NestJS and TypeORM.
-
-First, let's define a domain entity representing a User:
-
-```js
-// user.entity.ts
-
-export class User {
-  constructor(
-    public readonly id: number,
-    public readonly username: string,
-    public readonly email: string,
-    public readonly password: string
-  ) {}
-}
-```
-
-This entity represents the business concept of a User in our application.
-
-Next, let's define a persistence entity representing the User table in the database:
-
-```js
-// user.entity.ts
-
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
-
-@Entity()
-export class UserEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @Column()
-  username: string;
-
-  @Column()
-  email: string;
-
-  @Column()
-  password: string;
-}
-```
-
-This entity represents the data structure that is stored in the database.
-
-To map between these two entities, we can define a mapper or conversion layer. Here's an example of how this can be implemented:
-
-```js
-// user.mapper.ts
-
-import { Injectable } from '@nestjs/common';
-import { User } from './user.entity';
-import { UserEntity } from './user.entity';
-
-@Injectable()
-export class UserMapper {
-  toDomainEntity(entity: UserEntity): User {
-    return new User(
-      entity.id,
-      entity.username,
-      entity.email,
-      entity.password
-    );
-  }
-
-  toPersistenceEntity(domainEntity: User): UserEntity {
-    const entity = new UserEntity();
-    entity.id = domainEntity.id;
-    entity.username = domainEntity.username;
-    entity.email = domainEntity.email;
-    entity.password = domainEntity.password;
-    return entity;
-  }
-}
-```
-
-In this example, the UserMapper class defines two methods: toDomainEntity and toPersistenceEntity. The toDomainEntity method converts a UserEntity object to a User object, while the toPersistenceEntity method converts a User object to a UserEntity object.
-
-Finally, we can use these entities and mapper in our NestJS application:
-
-```js
-// user.service.ts
-
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { User } from './user.entity';
-import { UserEntity } from './user.entity';
-import { UserMapper } from './user.mapper';
-
-@Injectable()
-export class UserService {
-  constructor(
-    @InjectRepository(UserEntity)
-    private readonly userRepository: Repository<UserEntity>,
-    private readonly userMapper: UserMapper
-  ) {}
-
-  async findById(id: number): Promise<User> {
-    const entity = await this.userRepository.findOne(id);
-    return this.userMapper.toDomainEntity(entity);
-  }
-
-  async create(user: User): Promise<User> {
-    const entity = this.userMapper.toPersistenceEntity(user);
-    const createdEntity = await this.userRepository.save(entity);
-    return this.userMapper.toDomainEntity(createdEntity);
-  }
-}
-```
-
-In this example, the UserService class uses the UserEntity and User entities, as well as the UserMapper class, to query and manipulate data in the database. The findById method retrieves a UserEntity object from the database and converts it to a User object using the toDomainEntity method of the UserMapper class. The create method converts a User object to a UserEntity object using the toPersistenceEntity method of the UserMapper class, saves the entity to the database using the userRepository repository, and converts the created entity back to a User object using the toDomainEntity method of the UserMapper class.
-
-This example demonstrates how the separation between domain entities and persistence entities, along with a mapping layer, can be implemented in NestJS and TypeORM to maintain a clear separation of concerns and promote maintainability and scalability of the application.
-
 
 ## Event Publish with kafka
 
@@ -1407,7 +1397,6 @@ Note that in this example, the Kafka configuration is hard-coded to localhost:90
 
 Overall, this example demonstrates how an aggregate root can be defined in NestJS with event publishing using Kafka. By using the AggregateRoot base class from the @nestjs/cqrs module, you can easily implement event sourcing and event-driven architecture in a DDD architecture.
 
-
 ## Unit of Work (UoW) pattern
 
 UnitOfWork (UoW) is a software design pattern commonly used in applications that use a Domain-Driven Design (DDD) architecture. The Unit of Work pattern is used to ensure data consistency and integrity in write operations to the database, and to minimize the number of write operations that are performed on the database.
@@ -1420,7 +1409,7 @@ In a DDD-based application, the Unit of Work pattern is used to group all operat
 
 In summary, the Unit of Work pattern is a software design pattern that is used to ensure data consistency and integrity in write operations to the database, and to minimize the number of write operations that are performed on the database. In a DDD-based application, the Unit of Work is responsible for grouping all operations that are performed on a single transaction and for ensuring that business rules are respected.
 
-### Example: how to implement the Unit of Work pattern in TypeScript:
+### Example: how to implement the Unit of Work pattern in TypeScript
 
 ```js
 import { EntityManager, EntityRepository, getManager } from 'typeorm';
@@ -1581,7 +1570,6 @@ Here are a few ways that CQRS can help with fault tolerance:
 For example, if a component fails and needs to be restarted, it can use the event log to rebuild its state and ensure that it has the latest data. Similarly, if two components have different views of the system's state due to a network partition or other issue, they can use the event log to reconcile their differences and ensure that they are both up-to-date.
 
 Overall, CQRS can help to make a distributed system more fault-tolerant by providing a clear separation of concerns, enabling redundant components, supporting asynchronous processing, and facilitating event sourcing.
-
 
 ### CQRS and data consistency
 
@@ -1797,7 +1785,6 @@ export class ProductController {
 In this example, we've defined a ProductService that uses the CommandBus and QueryBus to send commands and queries to their respective handlers. We've also defined a ProductController that uses the ProductService to handle HTTP requests.
 
 Note that the ProductService and ProductController layers are not strictly necessary in the CQRS architecture, but they can be helpful for organizing the code and providing a more traditional API to external clients.
-
 
 ### CQRS and Event Sourcing
 
@@ -2063,4 +2050,106 @@ export class ProductsProjection implements OnModuleInit {
 In this example, we're using the version property of the Projection class to specify a versioning function. This function takes an event as input and returns the version number of the Product entity from the event payload. The projection will use this version number to detect conflicts and handle them appropriately.
 
 With optimistic concurrency control in place, we can handle concurrent events and ensure that conflicts are resolved correctly. If a conflict is detected, we can handle it appropriately, such as by retrying the operation or notifying the user.
+
+
+## Other topics
+### Object-relational impedanse mismatch
+
+The Object-Relational Impedance Mismatch is a phenomenon that occurs when an application needs to work with data stored in a relational database, but the programming language used to build the application is object-oriented. The mismatch arises because object-oriented programming languages represent data as objects, while relational databases represent data as tables.
+
+The mismatch can cause several problems, including:
+
+* Mapping Objects to Tables: Object-oriented programming languages use classes and objects to represent data, while relational databases use tables. Mapping objects to tables can be complex, as objects have properties and methods, while tables have columns and rows.
+
+* Data Type Mismatch: Object-oriented programming languages and relational databases have different data types. For example, object-oriented programming languages often have a Boolean data type, while relational databases do not.
+
+* Querying Data: Object-oriented programming languages use object-oriented query languages, such as LINQ, while relational databases use SQL. Converting between the two can be difficult, as they have different syntax and semantics.
+
+* Performance: Object-oriented programming languages often use in-memory data structures, while relational databases use disk-based storage. This can result in performance issues when reading and writing data.
+
+Overall, the Object-Relational Impedance Mismatch can make it difficult to work with data stored in a relational database using an object-oriented programming language. However, there are several techniques and frameworks, such as Object-Relational Mapping (ORM), that can help to mitigate the mismatch and make it easier to work with data in a relational database.
+
+### ORM
+
+Object-Relational Mapping (ORM) is a technique that helps to mitigate the Object-Relational Impedance Mismatch by providing a mapping between the object-oriented programming language and the relational database. ORM frameworks map database tables to classes and map database columns to object properties, making it easier to work with data stored in a relational database using an object-oriented programming language.
+
+Here are some ways in which ORM helps mitigate the Object-Relational Impedance Mismatch:
+
+* Object-Relational Mapping: ORM frameworks provide a mapping between the object-oriented programming language and the relational database. This mapping allows objects to be stored in the database and retrieved from the database in a way that is consistent with the object-oriented programming language.
+
+* Querying Data: ORM frameworks provide a way to query data from the database using an object-oriented query language, such as LINQ. This makes it easier to retrieve data from the database and work with it in an object-oriented programming language.
+
+* Lazy Loading: ORM frameworks provide lazy loading, which allows related objects to be loaded only when they are needed. This can improve performance by reducing the number of database queries that need to be executed.
+
+* Transactions: ORM frameworks provide a way to manage transactions, which allows multiple database operations to be executed as a single unit of work. Transactions ensure that all operations are completed successfully or are rolled back if an error occurs.
+
+* Caching: ORM frameworks provide caching, which allows frequently accessed data to be stored in memory. This can improve performance by reducing the number of database queries that need to be executed.
+
+Overall, ORM helps to mitigate the Object-Relational Impedance Mismatch by providing a mapping between the object-oriented programming language and the relational database. ORM frameworks make it easier to work with data stored in a relational database using an object-oriented programming language, and provide features such as lazy loading, transactions, and caching, which can improve performance and simplify development.
+
+#### LAzy loading and performance
+
+Lazy loading is a technique used by Object-Relational Mapping (ORM) frameworks to load related objects only when they are needed. This can improve performance by reducing the number of database queries that need to be executed and the amount of data that needs to be retrieved from the database.
+
+Here's an example to illustrate how lazy loading can improve performance:
+
+Let's say we have a Customer class that has a one-to-many relationship with an Order class. Each customer can have many orders. In a non-lazy loading scenario, if we retrieve a customer from the database, all of their orders would also be retrieved from the database, even if we don't need all of them. This can result in a lot of unnecessary data being retrieved from the database and can slow down our application.
+
+With lazy loading, the orders are not loaded when the customer is retrieved from the database. Instead, the orders are loaded only when they are actually needed. For example, if we have a method that needs to access the orders of a customer, the ORM framework will load only the orders that are needed for that method and not all the orders.
+
+This approach can significantly reduce the amount of data that needs to be retrieved from the database and can improve the performance of our application. By loading related objects only when they are needed, we can avoid unnecessary database queries and reduce the amount of data that needs to be transmitted over the network.
+
+However, it's important to note that lazy loading can also have a negative impact on performance if used excessively. If we use lazy loading to load many related objects one at a time, this can result in a lot of database queries being executed, which can slow down our application. Therefore, it's important to use lazy loading judiciously and consider other techniques, such as eager loading, when appropriate.
+
+#### Eager loading
+
+Eager loading is a technique used by Object-Relational Mapping (ORM) frameworks to load related objects from the database along with the main object, rather than waiting to load them later. This can reduce the number of database queries that need to be executed and can improve the performance of our application.
+
+Here's an example to illustrate how eager loading works:
+
+Let's say we have a Customer class that has a one-to-many relationship with an Order class. Each customer can have many orders. In a non-eager loading scenario, if we retrieve a customer from the database, only the customer data is retrieved from the database. Later, if we need to access the customer's orders, additional queries would need to be executed to retrieve the orders. This can result in a lot of unnecessary database queries being executed and can slow down our application.
+
+With eager loading, the orders are loaded from the database along with the customer data, using a single query. This means that all of the data we need is retrieved from the database in a single query, rather than multiple queries.
+
+Eager loading can be especially useful when working with large datasets or when we know that we will need to access related objects frequently. By loading related objects upfront, we can avoid the need to execute additional queries later, which can improve the performance of our application.
+
+However, it's important to note that eager loading can also have a negative impact on performance if used excessively. If we eagerly load too many related objects, this can result in a lot of unnecessary data being retrieved from the database, which can slow down our application. Therefore, it's important to use eager loading judiciously and consider other techniques, such as lazy loading, when appropriate.
+
+#### example
+
+Here's an example that demonstrates both lazy and eager loading using the TypeORM ORM in TypeScript:
+
+```js
+// Lazy loading example
+const customer = await getConnection()
+  .getRepository(Customer)
+  .findOne(1);
+// At this point, only the customer data is loaded from the database
+// The orders are not loaded yet
+
+const orders = await customer.orders;
+// Accessing the orders property triggers a query to the database
+// to load the order data
+
+for (const order of orders) {
+  console.log(`Order ${order.id}: ${order.total}`);
+}
+
+// Eager loading example
+const customer = await getConnection()
+  .getRepository(Customer)
+  .findOne(1, { relations: ['orders'] });
+// Using the `relations` option eagerly loads the orders
+
+for (const order of customer.orders) {
+  console.log(`Order ${order.id}: ${order.total}`);
+}
+```
+
+In the lazy loading example, we first retrieve a customer from the database, but the orders are not loaded yet. Later, when we access the orders property, a query is triggered to the database to load the order data.
+
+In the eager loading example, we use the relations option to specify that we want to eagerly load the customer's orders. This means that all of the data we need is retrieved from the database in a single query, and no additional queries are needed to load the order data.
+
+Note that the exact syntax and method names may vary depending on the ORM framework and programming language you are using.
+
 ## WORK IN PROGRESS
