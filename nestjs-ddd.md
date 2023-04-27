@@ -1407,4 +1407,660 @@ Note that in this example, the Kafka configuration is hard-coded to localhost:90
 
 Overall, this example demonstrates how an aggregate root can be defined in NestJS with event publishing using Kafka. By using the AggregateRoot base class from the @nestjs/cqrs module, you can easily implement event sourcing and event-driven architecture in a DDD architecture.
 
+
+## Unit of Work (UoW) pattern
+
+UnitOfWork (UoW) is a software design pattern commonly used in applications that use a Domain-Driven Design (DDD) architecture. The Unit of Work pattern is used to ensure data consistency and integrity in write operations to the database, and to minimize the number of write operations that are performed on the database.
+
+The Unit of Work pattern is based on the idea that write operations to the database should be treated as a single transaction. Rather than writing data to the database on each operation, the Unit of Work pattern groups all write operations into a single transaction. This ensures that all write operations are completed successfully, or are rolled back if any of them fail.
+
+The Unit of Work pattern is also used to minimize the number of write operations that are performed on the database. Instead of writing data to the database on each operation, the Unit of Work pattern waits until all write operations are complete before writing the data to the database. This can improve performance and reduce the load on the database.
+
+In a DDD-based application, the Unit of Work pattern is used to group all operations that are performed on a single transaction. The Unit of Work is responsible for creating, reading, updating, and deleting objects from the database. The Unit of Work pattern is also used to ensure that all write operations are performed consistently and that business rules are respected.
+
+In summary, the Unit of Work pattern is a software design pattern that is used to ensure data consistency and integrity in write operations to the database, and to minimize the number of write operations that are performed on the database. In a DDD-based application, the Unit of Work is responsible for grouping all operations that are performed on a single transaction and for ensuring that business rules are respected.
+
+### Example: how to implement the Unit of Work pattern in TypeScript:
+
+```js
+import { EntityManager, EntityRepository, getManager } from 'typeorm';
+
+@EntityRepository(User)
+export class UserRepository {
+  constructor(private readonly entityManager: EntityManager) {}
+
+  async create(user: User): Promise<void> {
+    await this.entityManager.save(user);
+  }
+
+  async update(user: User): Promise<void> {
+    await this.entityManager.save(user);
+  }
+
+  async delete(user: User): Promise<void> {
+    await this.entityManager.delete(User, user.id);
+  }
+}
+
+export class UnitOfWork {
+  private readonly entityManager: EntityManager;
+
+  constructor() {
+    this.entityManager = getManager();
+  }
+
+  private userRepository: UserRepository;
+
+  getUserRepository(): UserRepository {
+    if (!this.userRepository) {
+      this.userRepository = new UserRepository(this.entityManager);
+    }
+    return this.userRepository;
+  }
+
+  async commit(): Promise<void> {
+    await this.entityManager.transaction(async (entityManager) => {
+      // perform any necessary operations on repositories
+      // ...
+    });
+  }
+}
+```
+
+In this example, the UserRepository class is responsible for performing CRUD operations on the User entity. The UnitOfWork class is responsible for managing transactions and exposing the repositories to the rest of the application.
+
+The UserRepository class takes an EntityManager instance as a constructor parameter. This allows the repository to perform database operations using the same connection as the rest of the application.
+
+The UnitOfWork class creates a single EntityManager instance and exposes the UserRepository instance through a getter method. This ensures that all operations on the UserRepository are performed within the same transaction.
+
+The commit method of the UnitOfWork class uses the transaction method of the EntityManager to execute all operations within a single transaction. Any necessary operations on the repositories can be performed within this method.
+
+Overall, this example demonstrates how the Unit of Work pattern can be implemented in TypeScript using the TypeORM library. By grouping all operations within a single transaction, the Unit of Work pattern ensures data consistency and integrity and reduces the number of database operations.
+
+## CQRS
+
+CQRS, or Command Query Responsibility Segregation, is a design pattern that separates the responsibility for handling commands (which change the state of the system) from the responsibility for handling queries (which retrieve data from the system). This separation allows for more flexibility in scaling and optimizing different parts of the system.
+
+In a CQRS architecture, commands and queries are treated as separate concerns, with different requirements for their implementation.
+
+Commands are used to change the state of the system - for example, creating a new user, updating an existing record, or deleting data. They are usually asynchronous, and may have side effects such as sending notifications or triggering other processes.
+
+Queries, on the other hand, are used to retrieve data from the system - for example, fetching a list of products, or retrieving a specific user's details. They are typically synchronous, and do not have side effects.
+
+Separating commands and queries in this way allows for more efficient scaling and optimization of different parts of the system. For example, the command side may require more powerful hardware or specialized infrastructure to handle high volumes of requests, while the query side can be optimized for fast, synchronous access to data.
+
+In the example I provided earlier, NestJS provides the @nestjs/cqrs module to help with the implementation of CQRS. This module includes several interfaces and decorators that you can use to define your commands, queries, and handlers, and a CommandBus and QueryBus that you can use to dispatch commands and queries to their respective handlers.
+
+To get started with CQRS in NestJS, you would typically define your commands and queries as classes, and their corresponding handlers as separate classes. You would then register these handlers with the CommandBus and QueryBus providers, respectively, and use the execute method to send commands and queries to the appropriate handlers.
+
+### Example
+
+In NestJS, you can implement CQRS using the @nestjs/cqrs module. Here's a simple example:
+
+```js
+// Command
+export class CreateProductCommand {
+  constructor(public readonly name: string, public readonly price: number) {}
+}
+
+// Command handler
+@CommandHandler(CreateProductCommand)
+export class CreateProductHandler implements ICommandHandler<CreateProductCommand> {
+  constructor(private readonly productService: ProductService) {}
+
+  async execute(command: CreateProductCommand) {
+    const { name, price } = command;
+    const product = await this.productService.createProduct(name, price);
+    return product;
+  }
+}
+
+// Query
+export class GetProductsQuery {}
+
+// Query handler
+@QueryHandler(GetProductsQuery)
+export class GetProductsHandler implements IQueryHandler<GetProductsQuery> {
+  constructor(private readonly productService: ProductService) {}
+
+  async execute(query: GetProductsQuery) {
+    const products = await this.productService.getProducts();
+    return products;
+  }
+}
+
+// Service
+@Injectable()
+export class ProductService {
+  private readonly products: Product[] = [];
+
+  async createProduct(name: string, price: number) {
+    const product = new Product(name, price);
+    this.products.push(product);
+    return product;
+  }
+
+  async getProducts() {
+    return this.products;
+  }
+}
+```
+
+In this example, we have a CreateProductCommand that creates a new product, and a GetProductsQuery that retrieves all products. We have separate handlers for each command and query, and a ProductService that handles the actual business logic.
+
+To use the CQRS module in NestJS, you would register the command and query handlers with the CommandBus and QueryBus providers, respectively, and use the execute method to send commands and queries to the appropriate handlers.
+
+### CQRS and escalability
+
+CQRS can help with scalability in several ways:
+
+* Separation of Concerns: By separating the responsibility for handling commands that change the state of the system from the responsibility for handling queries that retrieve data from the system, CQRS helps to ensure that each part of the system can be optimized separately for its specific requirements. This can lead to more efficient use of resources and better scalability.
+
+* Command-Query Separation: CQRS promotes a clear separation between the read and write operations of an application, which can help to simplify the design of the system and make it easier to reason about. This can make it easier to scale the system horizontally by adding more instances of the read and write components as needed.
+
+* Performance Optimization: Because the write side of the system is responsible for handling commands that change the state of the system, it can be optimized for high throughput and low latency, without worrying about the performance impact on the read side. Similarly, the read side of the system can be optimized for fast, low-latency queries without worrying about the performance impact on the write side.
+
+* Distributed Processing: In a distributed system, CQRS can help to make it easier to partition data and processing across different nodes, allowing for more efficient use of resources and better scalability.
+
+Overall, CQRS can help to improve the scalability and performance of a system by promoting a clear separation of concerns, simplifying the design of the system, and enabling more efficient use of resources. However, it's worth noting that implementing CQRS can also add complexity to a system and may not be necessary for all applications.
+
+### CQRS and fault tolerance
+
+CQRS can help with fault tolerance in a distributed system by providing a clear separation of concerns between the write and read sides of the system, making it easier to recover from failures and ensure data consistency.
+
+Here are a few ways that CQRS can help with fault tolerance:
+
+* Redundancy: In a distributed system, it's important to have redundant components to ensure that the system can continue to function even in the event of failures. By separating the write and read sides of the system, CQRS makes it easier to add redundant components to each side of the system as needed.
+
+  For example, you might have multiple instances of the write component that are responsible for processing commands, and multiple instances of the read component that are responsible for handling queries. If one component fails, the others can continue to function and take over its responsibilities.
+
+* Asynchronous Processing: CQRS often involves asynchronous processing of commands and events, which can help to make the system more fault-tolerant. For example, if a command fails to execute due to a network failure or other issue, it can be retried later without affecting the rest of the system. Similarly, if an event fails to be processed by a component, it can be queued for later processing.
+
+    Event Sourcing: CQRS is often used in conjunction with event sourcing, which involves storing a log of all events that have occurred in the system. This can help to ensure data consistency and make it easier to recover from failures.
+
+For example, if a component fails and needs to be restarted, it can use the event log to rebuild its state and ensure that it has the latest data. Similarly, if two components have different views of the system's state due to a network partition or other issue, they can use the event log to reconcile their differences and ensure that they are both up-to-date.
+
+Overall, CQRS can help to make a distributed system more fault-tolerant by providing a clear separation of concerns, enabling redundant components, supporting asynchronous processing, and facilitating event sourcing.
+
+
+### CQRS and data consistency
+
+CQRS can handle data consistency in a distributed system by using techniques such as event sourcing, optimistic concurrency control, and eventual consistency.
+
+Here are a few ways that CQRS can ensure data consistency in a distributed system:
+
+* Event Sourcing: CQRS is often used in conjunction with event sourcing, which involves storing a log of all events that have occurred in the system. This log can be used to rebuild the current state of the system at any point in time, and can help to ensure data consistency across different components.
+
+For example, if two components have different views of the system's state due to a network partition or other issue, they can use the event log to reconcile their differences and ensure that they are both up-to-date.
+
+* Optimistic Concurrency Control: CQRS can use optimistic concurrency control to ensure that multiple components don't update the same data at the same time. This involves adding a version number or timestamp to each record, and rejecting updates if the version number or timestamp doesn't match the current value.
+
+For example, if two components try to update the same record at the same time, the first update will succeed and the second update will be rejected due to the version number or timestamp mismatch.
+
+* Eventual Consistency: CQRS can use eventual consistency to ensure that data is eventually consistent across different components, even if there are temporary discrepancies. This involves accepting that different components may have different views of the system's state at any given time, but ensuring that these views eventually converge.
+
+For example, if two components have different views of the system's state due to a network partition or other issue, they can continue to operate independently and eventually converge when the partition is resolved.
+
+Overall, CQRS can handle data consistency in a distributed system by using techniques such as event sourcing, optimistic concurrency control, and eventual consistency. However, it's worth noting that these techniques can add complexity to a system and may not be necessary for all applications.
+
+### Drawbacks of CQRS
+
+While CQRS can provide many benefits, there are also some potential drawbacks to consider:
+
+* Complexity: Implementing CQRS can add complexity to a system, particularly in terms of the additional infrastructure and tooling required to support separate command and query processing. This can make it more difficult to develop, test, and maintain the system.
+
+* Performance Overhead: Because CQRS involves separate processing for commands and queries, there is often additional overhead involved in managing the communication between these components. This can lead to increased latency and reduced performance, especially in systems with high volumes of requests.
+
+* Eventual Consistency: CQRS often involves eventual consistency, which means that different parts of the system may have different views of the data at any given time. While eventual consistency can help to improve scalability and fault tolerance, it can also make it more difficult to reason about the system's state and behavior.
+
+* Development Complexity: CQRS can require a different mindset and set of skills from developers, as they need to be able to think about the system in terms of separate read and write operations. This can make it more difficult to find qualified developers, and can also lead to longer development cycles and higher costs.
+
+* Potential Over-Engineering: CQRS can be a powerful tool, but it may not be necessary for all applications. In some cases, it may be more appropriate to use a simpler architecture that is easier to build and maintain.
+
+Overall, while CQRS can provide many benefits in terms of scalability, fault tolerance, and performance, it is important to carefully consider the trade-offs and potential drawbacks before deciding to implement it in a system.
+
+### CQRS alternatives
+
+There are several alternatives to CQRS that can be used to build scalable and maintainable systems:
+
+* CRUD-based Architecture: A CRUD-based architecture is a simple and straightforward alternative to CQRS. It involves using a single data store that handles both read and write operations, and using a traditional CRUD (Create, Read, Update, Delete) approach to manage data. This architecture can be a good fit for small to medium-sized applications that don't require the scalability and fault tolerance benefits of CQRS.
+
+* Domain-Driven Design (DDD): DDD is a design approach that emphasizes building software around a domain model that reflects the business domain. It can be used to create scalable and maintainable systems by focusing on business requirements and using a layered architecture that separates concerns. DDD can be a good fit for complex applications that require a high degree of flexibility and agility.
+
+* Microservices Architecture: A microservices architecture involves breaking a system down into smaller, independent services that communicate with each other over a network. Each service is responsible for a specific business capability, and can be developed and deployed independently. Microservices can be a good fit for large and complex systems that require high scalability and fault tolerance.
+
+* Event-Driven Architecture: An event-driven architecture involves building systems around events that occur in the system, rather than around CRUD operations. Events are used to trigger changes in the system, and components can be added or removed as needed to handle different events. This architecture can be a good fit for systems that require high scalability and fault tolerance, and can be used with or without CQRS.
+
+* Reactive Architecture: A reactive architecture involves building systems that are responsive, resilient, and elastic. It involves using asynchronous, non-blocking programming techniques to handle high volumes of requests, and can be a good fit for systems that require high scalability and fault tolerance.
+
+Overall, there are many alternatives to CQRS that can be used to build scalable and maintainable systems. The choice of architecture depends on the specific requirements of the application, and should be carefully evaluated based on factors such as scalability, fault tolerance, and development complexity.
+
+Also  it's possible for different architectures to work together with CQRS. In fact, CQRS can be used in conjunction with many of the architectures I mentioned earlier, such as microservices, event-driven architecture, and reactive architecture.
+
+For example, in a microservices architecture, you might use CQRS within each microservice to separate the read and write operations, while using a message bus to coordinate communication between microservices. Similarly, in an event-driven architecture, you might use CQRS to handle commands and queries that are triggered by events, while using a message broker to handle event processing.
+
+It's also possible to use different architectures for different parts of the system. For example, you might use a microservices architecture for the backend, while using a single-page application architecture for the frontend. In this case, you could use CQRS within each microservice to handle the read and write operations, while using a REST API to communicate between the frontend and backend.
+
+Ultimately, the choice of architecture depends on the specific requirements of the application, and it's important to carefully evaluate the trade-offs and benefits of each approach before deciding how to combine them.
+
+### example in nestjs + typeorm
+
+here's an example of implementing CQRS using NestJS with TypeORM:
+
+First, let's define a simple entity called Product:
+
+```js
+@Entity()
+export class Product {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column()
+  name: string;
+
+  @Column()
+  description: string;
+
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
+  price: number;
+}
+```
+
+Next, let's create a command DTO for creating a new product:
+
+```js
+export class CreateProductCommand {
+  constructor(
+    public readonly name: string,
+    public readonly description: string,
+    public readonly price: number,
+  ) {}
+}
+```
+
+We can then create a command handler that will handle the CreateProductCommand and save the new product to the database using TypeORM:
+
+```js
+@Injectable()
+export class CreateProductHandler implements ICommandHandler<CreateProductCommand> {
+  constructor(private readonly repository: Repository<Product>) {}
+
+  async execute(command: CreateProductCommand): Promise<void> {
+    const product = new Product();
+    product.name = command.name;
+    product.description = command.description;
+    product.price = command.price;
+    await this.repository.save(product);
+  }
+}
+```
+
+We also need to create a query DTO for retrieving a list of products:
+
+```js
+export class GetProductsQuery {}
+```
+
+We can then create a query handler that will handle the GetProductsQuery and retrieve a list of products from the database using TypeORM:
+
+```js
+@Injectable()
+export class GetProductsHandler implements IQueryHandler<GetProductsQuery> {
+  constructor(private readonly repository: Repository<Product>) {}
+
+  async execute(query: GetProductsQuery): Promise<Product[]> {
+    return await this.repository.find();
+  }
+}
+```
+
+Finally, we can define a module that will wire everything together:
+
+```js
+@Module({
+  imports: [TypeOrmModule.forFeature([Product])],
+  providers: [
+    CreateProductHandler,
+    GetProductsHandler,
+    {
+      provide: COMMAND_BUS,
+      useClass: CommandBus,
+    },
+    {
+      provide: QUERY_BUS,
+      useClass: QueryBus,
+    },
+  ],
+})
+export class ProductsModule {
+  constructor(
+    private readonly commandBus: CommandBus,
+    private readonly queryBus: QueryBus,
+    private readonly createProductHandler: CreateProductHandler,
+    private readonly getProductsHandler: GetProductsHandler,
+  ) {
+    this.commandBus.setHandler(CreateProductCommand, this.createProductHandler);
+    this.queryBus.setHandler(GetProductsQuery, this.getProductsHandler);
+  }
+}
+```
+
+In this example, we define a ProductsModule that imports the TypeOrmModule to provide access to the Product entity, and registers the CreateProductHandler and GetProductsHandler as command and query handlers, respectively. We also create instances of the CommandBus and QueryBus and wire them up to the appropriate handlers.
+
+With this architecture in place, we can now use the CommandBus to send CreateProductCommand instances to create new products, and use the QueryBus to send GetProductsQuery instances to retrieve a list of products. By separating the read and write operations in this way, we can more easily scale and maintain the system.
+
+#### Putting  controller and service on top
+
+In this example, we're following the CQRS pattern, which means that we're separating the concerns of handling commands and queries from the service and controller layers. Instead of having a traditional service and controller, we have command and query handlers that are responsible for handling the respective operations.
+
+However, it's still possible to define service and controller layers on top of the command and query handlers, if needed. Here's an example of what that might look like:
+
+```js
+@Injectable()
+export class ProductService {
+  constructor(
+    private readonly commandBus: CommandBus,
+    private readonly queryBus: QueryBus,
+  ) {}
+
+  async createProduct(name: string, description: string, price: number): Promise<void> {
+    const command = new CreateProductCommand(name, description, price);
+    await this.commandBus.execute(command);
+  }
+
+  async getProducts(): Promise<Product[]> {
+    const query = new GetProductsQuery();
+    return await this.queryBus.execute(query);
+  }
+}
+
+@Controller('products')
+export class ProductController {
+  constructor(private readonly productService: ProductService) {}
+
+  @Post()
+  async createProduct(
+    @Body('name') name: string,
+    @Body('description') description: string,
+    @Body('price') price: number,
+  ): Promise<void> {
+    await this.productService.createProduct(name, description, price);
+  }
+
+  @Get()
+  async getProducts(): Promise<Product[]> {
+    return await this.productService.getProducts();
+  }
+}
+```
+
+In this example, we've defined a ProductService that uses the CommandBus and QueryBus to send commands and queries to their respective handlers. We've also defined a ProductController that uses the ProductService to handle HTTP requests.
+
+Note that the ProductService and ProductController layers are not strictly necessary in the CQRS architecture, but they can be helpful for organizing the code and providing a more traditional API to external clients.
+
+
+### CQRS and Event Sourcing
+
+CQRS and Event Sourcing are often used together to build scalable and maintainable systems. Event Sourcing is a pattern for capturing all changes to an application's state as a sequence of events, which can be used to rebuild the state of the application at any point in time. CQRS is often used in conjunction with Event Sourcing to separate the read and write operations, which can provide a number of benefits, such as improved scalability, fault tolerance, and performance.
+
+Here's an example of how you might use CQRS and Event Sourcing together in NestJS with TypeORM:
+
+First, let's define an event that represents a new product being created:
+
+```js
+export class ProductCreatedEvent implements IEvent {
+  constructor(public readonly productId: number, public readonly name: string, public readonly description: string, public readonly price: number) {}
+}
+```
+
+When a new product is created, we'll create an instance of the ProductCreatedEvent and publish it to an event bus.
+
+Next, let's define an event handler that will handle the ProductCreatedEvent and save the event to the database using TypeORM:
+
+```js
+@Injectable()
+export class ProductCreatedHandler implements IEventHandler<ProductCreatedEvent> {
+  constructor(private readonly eventRepository: Repository<Event>) {}
+
+  async handle(event: ProductCreatedEvent): Promise<void> {
+    const productEvent = new Event();
+    productEvent.type = 'product_created';
+    productEvent.payload = JSON.stringify(event);
+    await this.eventRepository.save(productEvent);
+  }
+}
+```
+
+In this example, we're using the Event entity from TypeORM to store the event in the database. We're also using the IEventHandler interface from the @nestjs/cqrs package to define the event handler.
+
+We can then define a projection that will read the events from the database and update a materialized view of the products:
+
+```js
+@Injectable()
+export class ProductsProjection implements OnModuleInit {
+  private readonly projection: Projection;
+
+  constructor(private readonly eventBus: EventBus, private readonly repository: Repository<Product>) {}
+
+  async onModuleInit(): Promise<void> {
+    this.projection = new Projection('products', this.repository, this.eventBus);
+
+    await this.projection.init({
+      handlers: {
+        product_created: async (event: ProductCreatedEvent) => {
+          const product = new Product();
+          product.id = event.productId;
+          product.name = event.name;
+          product.description = event.description;
+          product.price = event.price;
+          await this.repository.save(product);
+        },
+      },
+    });
+  }
+}
+```
+
+In this example, we're using the Projection class from the nestjs-event-store package to read the events from the database and update the materialized view of the products. We're using the OnModuleInit interface to initialize the projection when the module is loaded, and defining a handler for the product_created event that will create a new Product entity and save it to the database.
+
+Finally, we can define a command handler that will handle the CreateProductCommand and publish a ProductCreatedEvent to the event bus:
+
+```js
+@Injectable()
+export class CreateProductHandler implements ICommandHandler<CreateProductCommand> {
+  constructor(private readonly commandBus: CommandBus) {}
+
+  async execute(command: CreateProductCommand): Promise<void> {
+    const productId = Math.floor(Math.random() * 1000000);
+    const event = new ProductCreatedEvent(productId, command.name, command.description, command.price);
+    await this.commandBus.publish(event);
+  }
+}
+```
+
+In this example, we're using the CommandBus to publish the ProductCreatedEvent instead of using the EventBus directly. This allows us to separate the command and event processing logic, and also enables us to publish events asynchronously.
+
+With this architecture in place, we can now use the CreateProductHandler to handle CreateProductCommand instances, which will publish ProductCreatedEvent instances to the event bus. The ProductCreatedHandler will then handle the event and save it to the database, and the ProductsProjection will read the event from the database and update the materialized view of the products.
+
+This approach provides a scalable and maintainable way to handle write operations using CQRS and Event Sourcing, while also providing a consistent and up-to-date view of the data using materialized views.
+
+#### Notes on materialized view
+
+To ensure that the materialized view of the products is always up-to-date, we need to make sure that all events are processed in the order in which they were generated. This is important because updating the materialized view out of order could result in an inconsistent or incorrect view of the data.
+
+One way to ensure that events are processed in order is to use a versioning mechanism. When an event is generated, it can include a version number that indicates the order in which the event was generated. The projection can then use this version number to ensure that events are processed in the correct order.
+
+Here's an example of how you might implement versioning in NestJS with TypeORM:
+
+First, let's update the ProductCreatedEvent to include a version number:
+
+```js
+export class ProductCreatedEvent implements IEvent {
+  constructor(public readonly productId: number, public readonly name: string, public readonly description: string, public readonly price: number, public readonly version: number) {}
+}
+```
+
+When a new product is created, we'll create an instance of the ProductCreatedEvent and publish it to an event bus. We'll also include a version number, which will be incremented each time a new event is generated.
+
+Next, let's update the event handler to store the version number along with the event:
+
+```js
+@Injectable()
+export class ProductCreatedHandler implements IEventHandler<ProductCreatedEvent> {
+  constructor(private readonly eventRepository: Repository<Event>) {}
+
+  async handle(event: ProductCreatedEvent): Promise<void> {
+    const productEvent = new Event();
+    productEvent.type = 'product_created';
+    productEvent.payload = JSON.stringify(event);
+    productEvent.version = event.version;
+    await this.eventRepository.save(productEvent);
+  }
+}
+```
+
+In this example, we're using the version property of the ProductCreatedEvent to store the version number along with the event.
+
+We can then update the projection to use the version number to ensure that events are processed in the correct order:
+
+```js
+@Injectable()
+export class ProductsProjection implements OnModuleInit {
+  private readonly projection: Projection;
+
+  constructor(private readonly eventBus: EventBus, private readonly repository: Repository<Product>) {}
+
+  async onModuleInit(): Promise<void> {
+    this.projection = new Projection('products', this.repository, this.eventBus);
+
+    await this.projection.init({
+      handlers: {
+        product_created: async (event: ProductCreatedEvent) => {
+          const product = new Product();
+          product.id = event.productId;
+          product.name = event.name;
+          product.description = event.description;
+          product.price = event.price;
+          await this.repository.save(product);
+        },
+      },
+      version: async (event: Event) => {
+        return event.version;
+      },
+    });
+  }
+}
+```
+
+In this example, we're using the version property of the Projection class to specify a versioning function. This function takes an event as input and returns the version number of the event. The projection will use this version number to ensure that events are processed in the correct order.
+
+With this versioning mechanism in place, we can ensure that the materialized view of the products is always up-to-date and consistent with the events that have been generated.
+
+#### handling event concurrency
+
+Handling events that are generated concurrently can be challenging, as it can lead to conflicts and inconsistencies in the materialized view. One way to handle concurrent events is to use optimistic concurrency control.
+
+Optimistic concurrency control is a technique that allows multiple users to access and modify the same data concurrently, while still ensuring that conflicts are resolved correctly. The basic idea is to check for conflicts before making changes to the data, and rolling back the transaction if a conflict is detected.
+
+Here's an example of how you might implement optimistic concurrency control in NestJS with TypeORM:
+
+First, let's update the Product entity to include a version number:
+
+```js
+@Entity()
+export class Product {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column()
+  name: string;
+
+  @Column()
+  description: string;
+
+  @Column()
+  price: number;
+
+  @VersionColumn()
+  version: number;
+}
+```
+
+In this example, we're using the @VersionColumn decorator from TypeORM to add a version column to the Product entity. This column will be used to store the version number of the entity.
+
+Next, let's update the event handler to use optimistic concurrency control:
+
+```js
+@Injectable()
+export class ProductCreatedHandler implements IEventHandler<ProductCreatedEvent> {
+  constructor(private readonly eventRepository: Repository<Event>, private readonly productRepository: Repository<Product>) {}
+
+  async handle(event: ProductCreatedEvent): Promise<void> {
+    const product = new Product();
+    product.id = event.productId;
+    product.name = event.name;
+    product.description = event.description;
+    product.price = event.price;
+    product.version = event.version;
+
+    try {
+      await this.productRepository.save(product);
+    } catch (error) {
+      if (error instanceof OptimisticLockVersionMismatchError) {
+        // Handle conflict
+      } else {
+        throw error;
+      }
+    }
+  }
+}
+```
+
+In this example, we're using the save method of the Repository class to save the Product entity to the database. If a concurrency conflict is detected, the save method will throw an OptimisticLockVersionMismatchError exception. We're catching this exception and handling the conflict appropriately.
+
+Finally, we can update the projection to use the version number of the Product entity to detect conflicts:
+
+```js
+@Injectable()
+export class ProductsProjection implements OnModuleInit {
+  private readonly projection: Projection;
+
+  constructor(private readonly eventBus: EventBus, private readonly repository: Repository<Product>) {}
+
+  async onModuleInit(): Promise<void> {
+    this.projection = new Projection('products', this.repository, this.eventBus);
+
+    await this.projection.init({
+      handlers: {
+        product_created: async (event: ProductCreatedEvent) => {
+          const product = new Product();
+          product.id = event.productId;
+          product.name = event.name;
+          product.description = event.description;
+          product.price = event.price;
+          product.version = event.version;
+
+          try {
+            await this.repository.save(product);
+          } catch (error) {
+            if (error instanceof OptimisticLockVersionMismatchError) {
+              // Handle conflict
+            } else {
+              throw error;
+            }
+          }
+        },
+      },
+      version: async (event: Event) => {
+        const payload = JSON.parse(event.payload);
+        return payload.version;
+      },
+    });
+  }
+}
+```
+
+In this example, we're using the version property of the Projection class to specify a versioning function. This function takes an event as input and returns the version number of the Product entity from the event payload. The projection will use this version number to detect conflicts and handle them appropriately.
+
+With optimistic concurrency control in place, we can handle concurrent events and ensure that conflicts are resolved correctly. If a conflict is detected, we can handle it appropriately, such as by retrying the operation or notifying the user.
 ## WORK IN PROGRESS
